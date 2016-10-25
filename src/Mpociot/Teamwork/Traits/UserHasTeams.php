@@ -50,7 +50,7 @@ trait UserHasTeams
      */
     public function invites()
     {
-        return $this->hasMany( Config::get('teamwork.invite_model'), 'email', 'email' );
+        return $this->hasMany( config('teamwork.invite_model'), 'invited_user_id', '_id' );
     }
 
     /**
