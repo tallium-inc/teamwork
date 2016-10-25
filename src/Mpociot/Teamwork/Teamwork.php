@@ -63,14 +63,13 @@ class Teamwork
         if( is_object( $user ) && isset($user->email) )
         {
             $email = $user->email;
-        } elseif( is_string($user) ) {
-            $email = $user;
         } else {
             throw new \Exception('The provided object has no "email" attribute and is not a string.');
         }
 
         $invite               = $this->app->make(Config::get('teamwork.invite_model'));
         $invite->user_id      = $this->user()->getKey();
+        $invite->invited_user_id = $user->getKey();
         $invite->team_id      = $team;
         $invite->type         = 'invite';
         $invite->email        = $email;
@@ -87,11 +86,11 @@ class Teamwork
     /**
      * Checks if the given email address has a pending invite for the
      * provided Team
-     * @param $email
+     * @param $user
      * @param Team|array|integer $team
      * @return bool
      */
-    public function hasPendingInvite( $email, $team )
+    public function hasPendingInvite( $user, $team )
     {
         if( is_object( $team ) )
         {
@@ -101,7 +100,7 @@ class Teamwork
         {
             $team = $team["id"];
         }
-        return $this->app->make(Config::get('teamwork.invite_model'))->where('email', "=", $email)->where('team_id', "=", $team )->first() ? true : false;
+        return $this->app->make(Config::get('teamwork.invite_model'))->where('invited_user_id', "=", $user->getKey())->where('team_id', "=", $team )->first() ? true : false;
     }
 
     /**
